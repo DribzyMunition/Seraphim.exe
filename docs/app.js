@@ -14,6 +14,14 @@ async function main(){
   lightbox.addEventListener('click', closeLight);
   window.addEventListener('keydown', e=>{ if(e.key==='Escape') closeLight(); });
 
+function normStatus(s){
+  // Treat older statuses as "new" so nothing disappears
+  if (!s) return 'new';
+  s = s.toLowerCase();
+  if (s === 'draft' || s === 'queued') return 'new';
+  return s; // 'new', 'scheduled', 'posted'
+}
+  
   function render(){
     const needle = (q.value||'').toLowerCase();
     const want = statusSel.value;
