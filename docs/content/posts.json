@@ -5,10 +5,9 @@
       "title": "Asymmetry — small burn, open tail",
       "status": "queued",
       "date_planned": "2025-10-14",
-      "tags": ["asymmetry","convexity"],
+      "tags": ["asymmetry", "convexity"],
       "images": [
-        { "src": "./media/asymmetry.jpg",  "alt": "right-tail curve" },
-        { "src": "./media/asymmetry-2.jpg","alt": "variant" }
+        { "src": "./media/6ececa79-a5a1-4800-8948-7c9f74171150.jpg", "alt": "asymmetry visual" }
       ],
       "thread": [
         "Bounded left tail, wide right tail.",
@@ -21,7 +20,7 @@
       "title": "Dynamic modelling note",
       "status": "draft",
       "date_planned": "2025-10-16",
-      "tags": ["dynamic-modelling","regimes"],
+      "tags": ["dynamic-modelling", "regimes"],
       "images": [],
       "thread": [
         "Tiny parameter shifts can flip regimes.",
