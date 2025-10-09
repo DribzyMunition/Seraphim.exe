@@ -118,39 +118,40 @@ if (composeBtn && sheet) {
     sheet.style.display = sheet.style.display === 'none' ? 'block' : 'none';
   });
 
-  const el = id => document.getElementById(id);
-  const makeBtn = el('c_make'), copyBtn = el('c_copy');
-  makeBtn.addEventListener('click', () => {
-    const title = el('c_title').value.trim();
-    const date_planned = el('c_date').value.trim();
-    const status = el('c_status').value;
-    const tags = el('c_tags').value.split(',').map(s=>s.trim()).filter(Boolean);
-    const images = el('c_images').value.split(',').map(s=>s.trim()).filter(Boolean)
-                     .map(name => ({ src: `./media/${name}`, alt: '' }));
-    const thread = el('c_thread').value.split('\n').map(s=>s.trim()).filter(Boolean);
-    const notes = el('c_notes').value.trim();
+  const bodyEl = document.getElementById('c_body');
+  const makeBtn = document.getElementById('c_make');
+  const copyBtn = document.getElementById('c_copy');
+  const outEl = document.getElementById('c_output');
 
-    const id = (date_planned || new Date().toISOString().slice(0,10))
-               + '-' + title.toLowerCase().replace(/[^a-z0-9]+/g,'-').replace(/^-|-$/g,'');
+  makeBtn.addEventListener('click', () => {
+    const body = (bodyEl.value || '').trim();
+    // Split body into lines (blank lines allowed but removed)
+    const thread = body.split('\n').map(s=>s.trim()).filter(Boolean);
+
+    // id = today + first 6 chars of a hash-like slug from body
+    const today = new Date().toISOString().slice(0,10);
+    const slug = body.toLowerCase().replace(/[^a-z0-9]+/g,'-').replace(/^-|-$/g,'').slice(0, 24);
+    const id = `${today}-${slug || 'post'}`;
 
     const block = {
-      id, title, status,
-      date_planned: date_planned || null,
-      tags,
-      images,
-      thread,
-      ...(notes ? { notes } : {})
+      id,
+      status: "new",
+      date_planned: null,
+      tags: [],
+      images: [],
+      thread
     };
 
-    el('c_output').value = JSON.stringify(block, null, 2) + ',';
+    outEl.value = JSON.stringify(block, null, 2) + ',';
   });
 
   copyBtn.addEventListener('click', async () => {
-    const out = document.getElementById('c_output').value;
-    if (!out) return;
-    try { await navigator.clipboard.writeText(out); copyBtn.textContent = 'Copied ✓'; }
+    const txt = outEl.value;
+    if (!txt) return;
+    try { await navigator.clipboard.writeText(txt); copyBtn.textContent = 'Copied ✓'; }
     catch { copyBtn.textContent = 'Copy failed'; }
     setTimeout(()=> copyBtn.textContent = 'Copy to clipboard', 1200);
   });
 }
+
 
