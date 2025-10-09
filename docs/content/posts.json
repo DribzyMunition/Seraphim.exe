@@ -7,7 +7,8 @@
       "date_planned": "2025-10-14",
       "tags": ["asymmetry","convexity"],
       "images": [
-        {"src": "./media/asymmetry.jpg", "alt": "right-tail curve", "credit": "you / source"}
+        { "src": "./media/asymmetry.jpg",  "alt": "right-tail curve" },
+        { "src": "./media/asymmetry-2.jpg","alt": "variant" }
       ],
       "thread": [
         "Bounded left tail, wide right tail.",
@@ -25,8 +26,7 @@
       "thread": [
         "Tiny parameter shifts can flip regimes.",
         "Design for the switch, not the calm."
-      ],
-      "notes": "Maybe an abstract glitch image."
+      ]
     }
   ]
 }
