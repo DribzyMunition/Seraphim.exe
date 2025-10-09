@@ -27,7 +27,7 @@ function normStatus(s){
     const want = statusSel.value;
     list.innerHTML = '';
     for(const p of posts){
-      if (want!=='all' && p.status!==want) continue;
+      if (normStatus(p.status) !== want) continue;
       const hay = (p.title+' '+(p.tags||[]).join(' ')+' '+(p.thread||[]).join(' ')).toLowerCase();
       if(!hay.includes(needle)) continue;
 
