@@ -53,24 +53,14 @@ input,select{padding:10px 12px;border:1px solid #2a2a33;border-radius:10px;backg
   <div id="lightbox"><img alt=""></div>
 
 <div id="composer" style="display:none;margin-top:16px" class="card">
-  <h3 style="margin:0 0 8px">New Post</h3>
-  <div style="display:grid;grid-template-columns:1fr 1fr;gap:10px">
-    <input id="c_title" placeholder="Title">
-    <input id="c_date" placeholder="date_planned (YYYY-MM-DD)">
-    <select id="c_status">
-      <option>draft</option><option>queued</option><option>scheduled</option><option>posted</option>
-    </select>
-    <input id="c_tags" placeholder="tags (comma-separated)">
-    <input id="c_images" placeholder="images (comma-separated filenames in docs/media)">
-  </div>
-  <textarea id="c_thread" placeholder="thread lines (one per line)" style="width:100%;height:100px;margin-top:10px"></textarea>
-  <input id="c_notes" placeholder="notes (optional)" style="width:100%;margin-top:8px">
+  <h3 style="margin:0 0 8px">New Post (body only)</h3>
+  <textarea id="c_body" placeholder="Write the post body (one line = one tweet; blank lines allowed)" style="width:100%;height:140px"></textarea>
   <div style="display:flex;gap:8px;margin-top:10px">
     <button id="c_make">Make JSON</button>
     <button id="c_copy">Copy to clipboard</button>
   </div>
   <textarea id="c_output" readonly style="width:100%;height:140px;margin-top:10px"></textarea>
-  <div style="opacity:.75;font-size:12px;margin-top:6px">Paste this block into <code>docs/content/posts.json</code> inside the <code>"posts": [ ... ]</code> array.</div>
+  <div style="opacity:.75;font-size:12px;margin-top:6px">
 </div>
 <style>
   /* keep your existing styles; just add this */
