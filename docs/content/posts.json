@@ -1,16 +1,32 @@
 {
   "posts": [
     {
-      "date": "2025-10-10",
+      "id": "2025-10-10-asymmetry",
       "title": "Asymmetry — small burn, open tail",
+      "status": "queued",
+      "date_planned": "2025-10-14",
       "tags": ["asymmetry","convexity"],
-      "text": "The best trades look lopsided: bounded left tail, wide right tail. Hunt capped loss and uncapped learning."
+      "images": [
+        {"src": "./media/asymmetry.jpg", "alt": "right-tail curve", "credit": "you / source"}
+      ],
+      "thread": [
+        "Bounded left tail, wide right tail.",
+        "Hunt capped loss and uncapped learning."
+      ],
+      "notes": "Pair with stark black/white line art."
     },
     {
-      "date": "2025-10-10",
+      "id": "2025-10-10-dyn-model",
       "title": "Dynamic modelling note",
+      "status": "draft",
+      "date_planned": "2025-10-16",
       "tags": ["dynamic-modelling","regimes"],
-      "text": "Tiny parameter shifts can flip regimes. Build models that survive the switch, not just fit the calm."
+      "images": [],
+      "thread": [
+        "Tiny parameter shifts can flip regimes.",
+        "Design for the switch, not the calm."
+      ],
+      "notes": "Maybe an abstract glitch image."
     }
   ]
 }
