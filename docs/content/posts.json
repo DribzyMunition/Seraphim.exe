@@ -1,0 +1,16 @@
+{
+  "posts": [
+    {
+      "date": "2025-10-10",
+      "title": "Asymmetry — small burn, open tail",
+      "tags": ["asymmetry","convexity"],
+      "text": "The best trades look lopsided: bounded left tail, wide right tail. Hunt capped loss and uncapped learning."
+    },
+    {
+      "date": "2025-10-10",
+      "title": "Dynamic modelling note",
+      "tags": ["dynamic-modelling","regimes"],
+      "text": "Tiny parameter shifts can flip regimes. Build models that survive the switch, not just fit the calm."
+    }
+  ]
+}
