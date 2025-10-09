@@ -53,3 +53,48 @@ async function main(){
   render();
 }
 main();
+
+// --- Composer (JSON generator) ---
+const composeBtn = document.getElementById('composeBtn');
+const sheet = document.getElementById('composer');
+if (composeBtn && sheet) {
+  composeBtn.addEventListener('click', () => {
+    sheet.style.display = sheet.style.display === 'none' ? 'block' : 'none';
+  });
+
+  const el = id => document.getElementById(id);
+  const makeBtn = el('c_make'), copyBtn = el('c_copy');
+  makeBtn.addEventListener('click', () => {
+    const title = el('c_title').value.trim();
+    const date_planned = el('c_date').value.trim();
+    const status = el('c_status').value;
+    const tags = el('c_tags').value.split(',').map(s=>s.trim()).filter(Boolean);
+    const images = el('c_images').value.split(',').map(s=>s.trim()).filter(Boolean)
+                     .map(name => ({ src: `./media/${name}`, alt: '' }));
+    const thread = el('c_thread').value.split('\n').map(s=>s.trim()).filter(Boolean);
+    const notes = el('c_notes').value.trim();
+
+    const id = (date_planned || new Date().toISOString().slice(0,10))
+               + '-' + title.toLowerCase().replace(/[^a-z0-9]+/g,'-').replace(/^-|-$/g,'');
+
+    const block = {
+      id, title, status,
+      date_planned: date_planned || null,
+      tags,
+      images,
+      thread,
+      ...(notes ? { notes } : {})
+    };
+
+    el('c_output').value = JSON.stringify(block, null, 2) + ',';
+  });
+
+  copyBtn.addEventListener('click', async () => {
+    const out = document.getElementById('c_output').value;
+    if (!out) return;
+    try { await navigator.clipboard.writeText(out); copyBtn.textContent = 'Copied ✓'; }
+    catch { copyBtn.textContent = 'Copy failed'; }
+    setTimeout(()=> copyBtn.textContent = 'Copy to clipboard', 1200);
+  });
+}
+
