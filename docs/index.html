@@ -37,6 +37,17 @@ input,select{padding:10px 12px;border:1px solid #2a2a33;border-radius:10px;backg
   <button id="libraryBtn">Library</button>
 
 </div>
+  <div id="library" class="card" style="display:none">
+  <div style="display:flex;gap:8px;align-items:center;margin-bottom:8px">
+    <strong>Image Library</strong>
+    <input id="lib_q" placeholder="filter tags/text…" style="flex:1">
+  </div>
+  <div id="lib_grid" class="gallery"></div>
+  <div style="opacity:.75;font-size:12px;margin-top:6px">
+    Tip: click an image to add its filename to the composer’s <code>images</code> field.
+  </div>
+</div>
+
   <section id="list"></section>
   
   <div id="lightbox"><img alt=""></div>
