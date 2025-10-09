@@ -54,6 +54,54 @@ async function main(){
 }
 main();
 
+// --- Image Library ---
+(async function(){
+  const libBtn = document.getElementById('libraryBtn');
+  const panel  = document.getElementById('library');
+  const grid   = document.getElementById('lib_grid');
+  const q      = document.getElementById('lib_q');
+  if (!libBtn || !panel) return;
+
+  let media = { images: [] };
+  try {
+    const res = await fetch('./content/media.json', { cache: 'no-store' });
+    if (res.ok) media = await res.json();
+  } catch {}
+
+  function renderLib() {
+    const needle = (q?.value || '').toLowerCase();
+    grid.innerHTML = '';
+    const imgs = (media.images || []).filter(i => {
+      const hay = (i.src + ' ' + (i.alt||'') + ' ' + (i.tags||[]).join(' ')).toLowerCase();
+      return hay.includes(needle);
+    });
+    for (const i of imgs) {
+      const img = document.createElement('img');
+      img.className = 'thumb';
+      img.src = i.src;
+      img.alt = i.alt || '';
+      img.title = (i.tags||[]).join(', ');
+      img.addEventListener('click', () => {
+        const field = document.getElementById('c_images');
+        if (!field) return;
+        const name = i.src.split('/').pop();
+        const parts = field.value.split(',').map(s=>s.trim()).filter(Boolean);
+        if (!parts.includes(name)) parts.push(name);
+        field.value = parts.join(', ');
+      });
+      grid.appendChild(img);
+    }
+    if (!grid.children.length) grid.innerHTML = '<div class="notes">No images yet. Upload to <code>docs/media/</code> and list them in <code>media.json</code>.</div>';
+  }
+
+  libBtn.addEventListener('click', () => {
+    panel.style.display = panel.style.display === 'none' ? 'block' : 'none';
+    if (panel.style.display === 'block') renderLib();
+  });
+  q?.addEventListener('input', renderLib);
+})();
+
+
 // --- Composer (JSON generator) ---
 const composeBtn = document.getElementById('composeBtn');
 const sheet = document.getElementById('composer');
