@@ -3,7 +3,7 @@
     {
       "id": "2025-10-10-asymmetry",
       "title": "Asymmetry — small burn, open tail",
-      "status": "queued",
+      "status": "new",
       "date_planned": "2025-10-14",
       "tags": ["asymmetry", "convexity"],
       "images": [
@@ -18,7 +18,7 @@
     {
       "id": "2025-10-10-dyn-model",
       "title": "Dynamic modelling note",
-      "status": "draft",
+      "status": "new",
       "date_planned": "2025-10-16",
       "tags": ["dynamic-modelling", "regimes"],
       "images": [],
