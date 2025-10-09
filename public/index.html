@@ -1,12 +1,18 @@
-<!DOCTYPE html>
+<!doctype html>
 <html lang="en">
-  <head>
-    <meta charset="UTF-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>Tweet Crafter</title>
-  </head>
-  <body class="bg-slate-950 text-slate-100">
-    <div id="root"></div>
-    <script type="module" src="/src/main.jsx"></script>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <title>twitter-lab</title>
+  <link rel="stylesheet" href="./style.css" />
+  <body>
+    <main>
+      <h1>twitter-lab</h1>
+      <p class="sub">Edit /docs/content/posts.json in GitHub → commit → refresh.</p>
+      <section id="controls">
+        <input id="q" placeholder="filter by tag or text…" />
+      </section>
+      <section id="list"></section>
+    </main>
+    <script type="module" src="./app.js"></script>
   </body>
 </html>
