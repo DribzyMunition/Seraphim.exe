@@ -1,0 +1,5 @@
+{
+  "images": [
+    { "src": "./media/sample-1.jpg", "alt": "sample", "tags": ["mood","bw"] }
+  ]
+}
