@@ -1,106 +1,74 @@
 <!doctype html>
-<meta charset="utf-8">
-<meta name="viewport" content="width=device-width,initial-scale=1">
-<title>Seraphim.exe — Planner</title>
-<style>
-:root{font-family:ui-sans-serif,system-ui,-apple-system,Segoe UI,Roboto,Inter,Arial}
-body{margin:0;background:#0b0b0c;color:#e9e9ee}
-main{max-width:900px;margin:32px auto;padding:0 16px}
-h1{margin:0 0 8px;font-size:28px}.sub{opacity:.75;margin:0 0 16px}
-#controls{display:flex;gap:8px;margin:12px 0 18px}
-input,select{padding:10px 12px;border:1px solid #2a2a33;border-radius:10px;background:#121217;color:#e9e9ee}
-.card{border:1px solid #1f1f28;border-radius:14px;padding:14px 16px;margin:10px 0;background:#121217}
-.meta{font-size:12px;opacity:.75;margin-bottom:6px}
-.tag{font-size:11px;border:1px solid #2f2f3a;border-radius:999px;padding:2px 8px;margin-right:6px}
-.gallery{display:grid;grid-template-columns:repeat(auto-fill,minmax(180px,1fr));gap:10px;margin:8px 0}
-.thumb{width:100%;aspect-ratio:4/3;object-fit:cover;border-radius:10px;border:1px solid #1f1f28;cursor:pointer}
-.notes{opacity:.8;margin-top:6px;font-size:14px}
-/* lightbox */
-#lightbox{position:fixed;inset:0;background:rgba(0,0,0,.8);display:none;align-items:center;justify-content:center;padding:20px}
-#lightbox img{max-width:95vw;max-height:90vh;border-radius:12px}
-#lightbox.show{display:flex}
-</style>
+<html lang="en">
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width,initial-scale=1">
+  <title>Seraphim.exe — Planner</title>
+  <link rel="stylesheet" href="./style.css">
 
-<main>
-  <h1>Seraphim.exe</h1>
-  <p class="sub">Drafts, images, and schedule—curated offline from Twitter.</p>
-<div id="controls">
-  <input id="q" placeholder="filter by text…">
-  <select id="status">
-    <option value="new">New</option>
-    <option value="scheduled">Scheduled</option>
-    <option value="posted">Posted</option>
-  </select>
-  <button id="composeBtn">Compose new post</button>
-  <button id="libraryBtn">Library</button>
-  
+  <body>
+    <main>
+      <h1>Seraphim.exe</h1>
+      <p class="sub">Drafts, images, and schedule—curated offline from Twitter.</p>
 
+      <!-- Controls -->
+      <div id="controls">
+        <input id="q" placeholder="filter by text…">
+        <select id="status">
+          <option value="new">New</option>
+          <option value="scheduled">Scheduled</option>
+          <option value="posted">Posted</option>
+        </select>
+        <button id="composeBtn" type="button">Compose new post</button>
+        <button id="libraryBtn" type="button">Library</button>
+      </div>
 
-</div>
-  <!-- === Text section (safe/additive) === -->
-<div class="card">
-  <div class="meta">Text section</div>
-  <div id="text_rail" class="rail">
-    <!-- Composer tile opens your existing composer -->
-    <div class="tile" style="display:flex;flex-direction:column;gap:8px">
-      <div style="font-size:12px;opacity:.7">Writing</div>
-      <div style="font-size:12px;opacity:.65">Click to open composer and create a new text tile.</div>
-      <button onclick="document.getElementById('composer').style.display='block'">Open composer</button>
-      <div class="thumbs"></div>
-    </div>
-    <!-- JS will add draft text tiles here later; this is just the container -->
-  </div>
-  <div class="notes">Drag images from the library onto a text tile to pair them.</div>
-</div>
+      <!-- === TOP: TEXT SECTION (composer at far-left; horizontal rail of text tiles) === -->
+      <section class="card">
+        <div class="meta">Text section</div>
+        <div id="text_rail" class="rail">
+          <!-- Composer tile -->
+          <div class="tile composer" aria-label="Writing box">
+            <div class="hint">Writing</div>
+            <textarea id="c_body" class="composer-body" placeholder="Write the post body (one line = one tweet)"></textarea>
+            <input id="c_images" class="composer-images" placeholder="images (comma-sep, e.g. a.jpg, b.jpg)">
+            <div class="composer-actions">
+              <button id="c_make" type="button">Make JSON</button>
+              <button id="c_copy" type="button">Copy to clipboard</button>
+            </div>
+            <textarea id="c_output" class="composer-output" readonly></textarea>
+          </div>
+          <!-- JS adds draft text tiles here -->
+        </div>
+        <div class="tip">Drag images from the library onto a text tile to pair them.</div>
+      </section>
 
-  <div id="library" class="card" style="display:none">
-  <div style="display:flex;gap:8px;align-items:center;margin-bottom:8px">
-    <strong>Image Library</strong>
-    <input id="lib_q" placeholder="filter tags/text…" style="flex:1">
-  </div>
-  <div id="lib_grid" class="gallery"></div>
-  <div style="opacity:.75;font-size:12px;margin-top:6px">
-    Tip: click an image to add its filename to the composer’s <code>images</code> field.
-  </div>
-</div>
+      <!-- === MIDDLE: IMAGE LIBRARY (2 rows, horizontal) === -->
+      <section id="library" class="card" style="display:none">
+        <div class="meta">Image Library</div>
+        <div style="display:flex;gap:8px;align-items:center;margin-bottom:8px">
+          <input id="lib_q" placeholder="filter tags/text…" style="flex:1">
+        </div>
+        <div id="lib_grid" class="lib-rail" aria-label="image library"></div>
+        <div class="tip">Click an image to add its filename to the composer, or drag it onto a text tile.</div>
+      </section>
 
-  <section id="list"></section>
-  <!-- === Two-week calendar (safe/additive) === -->
-<div class="card">
-  <div class="meta">Two-week calendar</div>
-  <div id="calendar" class="cal-grid"></div>
-  <div class="notes">Drag a text tile onto a day. Up to 6 posts/day; time shows top-right.</div>
-</div>
+      <!-- Your existing list of posts (kept) -->
+      <section class="card">
+        <div class="meta">Posts</div>
+        <div id="list"></div>
+      </section>
 
-  <div id="lightbox"><img alt=""></div>
+      <!-- === BOTTOM: 2-WEEK CALENDAR === -->
+      <section class="card">
+        <div class="meta">Two-week calendar</div>
+        <div id="calendar" class="cal-grid" aria-label="two week calendar"></div>
+        <div class="tip">Drag a text tile onto a day. Up to 6 posts/day; time shows top-right in white.</div>
+      </section>
+    </main>
 
-<div id="composer" style="display:none;margin-top:16px" class="card">
-  <h3 style="margin:0 0 8px">New Post (body only)</h3>
-  <textarea id="c_body" placeholder="Write the post body (one line = one tweet; blank lines allowed)" style="width:100%;height:140px"></textarea>
-  <div style="display:flex;gap:8px;margin-top:10px">
-    <button id="c_make">Make JSON</button>
-    <button id="c_copy">Copy to clipboard</button>
-  </div>
-  <textarea id="c_output" readonly style="width:100%;height:140px;margin-top:10px"></textarea>
-  <div style="opacity:.75;font-size:12px;margin-top:6px">
-</div>
-<style>
-  /* keep your existing styles; just add this */
-  button{padding:10px 12px;border:1px solid #2a2a33;border-radius:10px;background:#17171c;color:#e9e9ee;cursor:pointer}
-  button:hover{background:#1e1e25}
-  /* === Seraphim Scheduler (additive) === */
-.rail{display:flex;gap:12px;overflow-x:auto;padding-bottom:8px}
-.tile{flex:0 0 220px;height:220px;background:#0f0f14;border:1px solid #1f1f28;border-radius:14px;padding:10px;position:relative}
-.tile .thumbs{position:absolute;left:10px;right:10px;bottom:36px;display:flex;gap:6px}
-.thumb{width:90px;height:90px;object-fit:cover;border:1px solid #2a2a33;border-radius:10px;cursor:pointer}
-.cal-grid{display:grid;grid-template-columns:repeat(7,1fr);gap:10px}
-.day{min-height:180px;background:#0f0f14;border:1px solid #1f1f28;border-radius:14px;padding:10px}
-.dayhead{display:flex;justify-content:space-between;align-items:center;font-size:12px;opacity:.8;margin-bottom:6px}
-.slot{position:relative;background:#13131a;border:1px solid #252533;border-radius:12px;padding:8px;margin:6px 0}
-.slot .time{position:absolute;right:8px;top:6px;font-size:10px;color:#fff}
+    <!-- Lightbox (kept) -->
+    <div id="lightbox"><img alt=""></div>
 
-</style>
-
-  
-</main>
-<script type="module" src="./app.js"></script>
+    <script type="module" src="./app.js"></script>
+  </body>
+</html>
