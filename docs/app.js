@@ -220,4 +220,72 @@ main();
       `;
 
       // Accept images dropped onto this tile (pairing)
-      tile.addEventLi
+      tile.addEventListener('dragover', e => e.preventDefault());
+      tile.addEventListener('drop', e => {
+        e.preventDefault();
+        const pay = getPayload(e);
+        if (!pay || pay.type!=='image') return;
+        const t = tile.querySelector('.thumbs');
+        const exists = [...t.children].some(img => img.dataset.src === pay.src);
+        if (!exists){
+          const img = document.createElement('img');
+          img.className='thumb';
+          img.dataset.src = pay.src;
+          img.src = pay.src;
+          img.alt = pay.alt||'';
+          img.style.width='48px';
+          img.style.height='48px';
+          t.appendChild(img);
+        }
+      });
+
+      rail.appendChild(tile);
+    }
+  }
+
+  // Build 14-day calendar
+  function startOfDay(d){ const x=new Date(d); x.setHours(0,0,0,0); return x; }
+  function fmtDay(d){ return d.toLocaleDateString(undefined,{weekday:'short', month:'short', day:'numeric'}); }
+
+  function makeCalendar(){
+    calendar.innerHTML = '';
+    const base = startOfDay(new Date());
+
+    for (let i=0;i<14;i++){
+      const d = new Date(base); d.setDate(base.getDate()+i);
+
+      const cell = document.createElement('div');
+      cell.className='day';
+      cell.innerHTML = `
+        <div class="dayhead"><div>${fmtDay(d)}</div><div class="badge slots" style="font-size:11px;opacity:.6">0/6</div></div>
+        <div class="slots"></div>
+      `;
+      const slotsEl = cell.querySelector('.slots');
+      const count = () => cell.querySelector('.dayhead .slots').textContent = `${slotsEl.children.length}/6`;
+
+      // Accept text tiles only; fill next free slot
+      cell.addEventListener('dragover', e => { if (slotsEl.children.length<6) e.preventDefault(); });
+      cell.addEventListener('drop', e => {
+        e.preventDefault();
+        const pay = getPayload(e);
+        if (!pay || pay.type!=='text') return;
+        if (slotsEl.children.length>=6) return;
+
+        const time = SLOT_TIMES[slotsEl.children.length] || '—';
+        const post = posts.find(pp=>pp.id===pay.id) || { title:'Draft' };
+
+        const slot = document.createElement('div');
+        slot.className='slot';
+        slot.innerHTML = `<div class="time">${time}</div><div style="font-size:12px;line-height:1.35;padding-right:36px">${(post.title||'Draft').slice(0,140)}</div>`;
+        slotsEl.appendChild(slot);
+        count();
+      });
+
+      calendar.appendChild(cell);
+    }
+  }
+
+  // Initial render
+  renderRail();
+  makeCalendar();
+})();
