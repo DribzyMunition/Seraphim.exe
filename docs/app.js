@@ -122,3 +122,79 @@
 +
 +renderRail();
 +makeCalendar();
+// ===== Seraphim Scheduler (additive, safe) =====
+(function(){
+  // guard: only run if our containers exist and posts.json loaded
+  const rail = document.getElementById('text_rail');
+  const calendar = document.getElementById('calendar');
+  if (!rail || !calendar) return;
+
+  // try to reuse already-fetched posts from your main loader
+  let posts = [];
+  const list = document.getElementById('list'); // existing DOM means main loader likely ran
+  const grab = window.__SERAPHIM_POSTS__ || null;
+  function normStatus(s){ if(!s) return 'new'; s=s.toLowerCase(); return (s==='draft'||s==='queued')?'new':s; }
+
+  // If your main script didn’t expose posts, fetch them quickly (no-store)
+  (async function init(){
+    try{
+      if (Array.isArray(grab)) posts = grab;
+      else {
+        const res = await fetch('./content/posts.json',{cache:'no-store'});
+        const data = await res.json();
+        posts = (data.posts||[]).slice();
+      }
+    }catch(e){ posts = []; }
+
+    renderRail();
+    makeCalendar();
+    enableImageDrag();
+  })();
+
+  const SLOT_TIMES = ['09:00','11:00','13:00','15:00','17:00','19:00'];
+
+  function setPayload(e, obj){ e.dataTransfer.setData('application/json', JSON.stringify(obj)); e.dataTransfer.effectAllowed='move'; }
+  function getPayload(e){ try{ return JSON.parse(e.dataTransfer.getData('application/json')); }catch{return null;} }
+
+  function renderRail(){
+    [...rail.querySelectorAll('.tile.text')].forEach(n=>n.remove());
+    const drafts = posts.filter(p => normStatus(p.status) === 'new');
+    for (const p of drafts){
+      const tile = document.createElement('div');
+      tile.className = 'tile text';
+      tile.draggable = true;
+      tile.addEventListener('dragstart', e => setPayload(e, {type:'text', id:p.id}));
+      const first = (p.title || (p.thread?.[0]||'')).slice(0,140);
+      tile.innerHTML = `
+        <div class="badge">Draft</div>
+        <div style="font-size:13px;line-height:1.3;margin:6px 0 8px">${first||'Untitled'}</div>
+        <div class="thumbs"></div>
+        <div style="position:absolute;left:10px;right:10px;bottom:10px;font-size:12px;opacity:.6">Drag ⤵ to calendar</div>
+      `;
+      tile.addEventListener('dragover', e => e.preventDefault());
+      tile.addEventListener('drop', e => {
+        e.preventDefault();
+        const pay = getPayload(e);
+        if (!pay || pay.type!=='image') return;
+        const t = tile.querySelector('.thumbs');
+        const exists = [...t.children].some(img => img.dataset.src === pay.src);
+        if (!exists){
+          const img = document.createElement('img');
+          img.className='thumb'; img.dataset.src = pay.src; img.src = pay.src; img.alt = pay.alt||'';
+          img.style.width='48px'; img.style.height='48px';
+          t.appendChild(img);
+        }
+      });
+      rail.appendChild(tile);
+    }
+  }
+
+  function startOfDay(d){ const x=new Date(d); x.setHours(0,0,0,0); return x; }
+  function fmtDay(d){ return d.toLocaleDateString(undefined,{weekday:'short', month:'short', day:'numeric'}); }
+
+  function makeCalendar(){
+    calendar.innerHTML = '';
+    const base = startOfDay(new Date());
+    for (let i=0;i<14;i++){
+      const d = new Date(base); d.setDate(base.getDate()+i);
+      const cell =
