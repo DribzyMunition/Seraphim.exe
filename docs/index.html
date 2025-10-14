@@ -37,6 +37,22 @@ input,select{padding:10px 12px;border:1px solid #2a2a33;border-radius:10px;backg
 
 
 </div>
+  <!-- === Text section (safe/additive) === -->
+<div class="card">
+  <div class="meta">Text section</div>
+  <div id="text_rail" class="rail">
+    <!-- Composer tile opens your existing composer -->
+    <div class="tile" style="display:flex;flex-direction:column;gap:8px">
+      <div style="font-size:12px;opacity:.7">Writing</div>
+      <div style="font-size:12px;opacity:.65">Click to open composer and create a new text tile.</div>
+      <button onclick="document.getElementById('composer').style.display='block'">Open composer</button>
+      <div class="thumbs"></div>
+    </div>
+    <!-- JS will add draft text tiles here later; this is just the container -->
+  </div>
+  <div class="notes">Drag images from the library onto a text tile to pair them.</div>
+</div>
+
   <div id="library" class="card" style="display:none">
   <div style="display:flex;gap:8px;align-items:center;margin-bottom:8px">
     <strong>Image Library</strong>
