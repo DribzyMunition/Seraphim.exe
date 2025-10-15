@@ -27,21 +27,21 @@
         <div class="meta">Text section</div>
         <div id="text_rail" class="rail">
           <!-- Composer tile (keeps your current JSON composer working) -->
-          <div class="tile composer" aria-label="Writing box">
-            <div class="hint">Writing</div>
-            <textarea id="c_body" class="composer-body" placeholder="Write the post body (one line = one tweet)"></textarea>
-            <input id="c_images" class="composer-images" placeholder="images (comma-sep, e.g. a.jpg, b.jpg)">
-            <div class="composer-actions">
-              <button id="c_make" type="button">Make JSON</button>
-              <button id="c_copy" type="button">Copy to clipboard</button>
-            </div>
-            <textarea id="c_output" class="composer-output" readonly></textarea>
-          </div>
+-            <div class="composer-actions">
+-              <button id="c_make" type="button">Make JSON</button>
+-              <button id="c_copy" type="button">Copy to clipboard</button>
+-            </div>
+-            <textarea id="c_output" class="composer-output" readonly></textarea>
++            <div class="composer-actions">
++              <button id="c_post" type="button">Post</button>
++            </div>
+
           <!-- JS will append draft text tiles here later -->
         </div>
         <div class="tip">Drag images from the library onto a text tile to pair them.</div>
       </section>
 
+      
       <!-- MIDDLE: Image Library -->
       <section id="library" class="card" style="display:none">
         <div class="meta">Image Library</div>
