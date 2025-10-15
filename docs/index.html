@@ -27,16 +27,24 @@
         <div class="meta">Text section</div>
         <div id="text_rail" class="rail">
           <!-- Composer tile -->
-          <div class="tile composer" aria-label="Writing box">
-            <div class="hint">Writing</div>
-            <textarea id="c_body" class="composer-body" placeholder="Write the post body (one line = one tweet)"></textarea>
-            <input id="c_images" class="composer-images" placeholder="images (comma-sep, e.g. a.jpg, b.jpg)">
-            <div class="composer-actions">
-              <button id="c_make" type="button">Make JSON</button>
-              <button id="c_copy" type="button">Copy to clipboard</button>
-            </div>
-            <textarea id="c_output" class="composer-output" readonly></textarea>
-          </div>
+--- a/docs/index.html
++++ b/docs/index.html
+@@ -27,12 +27,9 @@
+           <div class="tile composer" aria-label="Writing box">
+             <div class="hint">Writing</div>
+-            <textarea id="c_body" class="composer-body" placeholder="Write the post body (one line = one tweet)"></textarea>
++            <textarea id="c_body" class="composer-body" placeholder="Write your post… (one line = one tweet)"></textarea>
+             <input id="c_images" class="composer-images" placeholder="images (comma-sep, e.g. a.jpg, b.jpg)">
+             <div class="composer-actions">
+-              <button id="c_make" type="button">Make JSON</button>
+-              <button id="c_copy" type="button">Copy to clipboard</button>
++              <button id="c_post" type="button">Post</button>
+             </div>
+-            <textarea id="c_output" class="composer-output" readonly></textarea>
+           </div>
+           <!-- JS adds draft text tiles here -->
+         </div>
+
           <!-- JS adds draft text tiles here -->
         </div>
         <div class="tip">Drag images from the library onto a text tile to pair them.</div>
