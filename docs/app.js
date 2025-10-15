@@ -20,6 +20,7 @@ async function main(){
   wireComposer();
   renderTextRail(posts);
   renderCalendar();
+  wirePostComposer();   // <-- lives in app.js, not index.html
 }
 main();
 
