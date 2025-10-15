@@ -127,6 +127,33 @@ function wirePostComposer(){
   });
 }
 
+function wirePostComposer(){
+  const bodyEl = document.getElementById('c_body');
+  const postBtn = document.getElementById('c_post');
+  if (!bodyEl || !postBtn) return;
+
+  postBtn.addEventListener('click', () => {
+    const body = (bodyEl.value || '').trim();
+    if (!body) return;
+
+    const thread = body.split('\n').map(s=>s.trim()).filter(Boolean);
+    const today = new Date().toISOString().slice(0,10);
+    const slug = body.toLowerCase().replace(/[^a-z0-9]+/g,'-').replace(/^-|-$/g,'').slice(0,24);
+    const id = `${today}-${slug || ('post-'+Math.random().toString(36).slice(2,7))}`;
+
+    const imagesField = (document.getElementById('c_images')?.value || '').trim();
+    const images = imagesField ? imagesField.split(',').map(s=>s.trim()).filter(Boolean).map(name => `./media/${name}`) : [];
+
+    const existing = Array.isArray(window.__SERAPHIM_POSTS__)? window.__SERAPHIM_POSTS__ : [];
+    window.__SERAPHIM_POSTS__ = [{ id, title: thread[0] || 'Untitled', status: 'new', date_planned: null, tags: [], images, thread }, ...existing];
+
+    // clear and re-render the rail using the updated list
+    bodyEl.value = '';
+    const imgEl = document.getElementById('c_images'); if (imgEl) imgEl.value = '';
+    renderTextRail(window.__SERAPHIM_POSTS__);
+  });
+}
+
 // ------------------------------
 // Image Library (toggle + filter + click-to-add filenames)
 // ------------------------------
