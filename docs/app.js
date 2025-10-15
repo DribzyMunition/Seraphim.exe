@@ -248,13 +248,15 @@ main();
       tile.draggable = true;
       tile.addEventListener('dragstart', e => setPayload(e, {type:'text', id:p.id}));
 
-      const first = (p.title || (p.thread?.[0]||'')).slice(0,140);
-      tile.innerHTML = `
-        <div class="badge" style="font-size:11px;opacity:.6">Draft</div>
-        <div style="font-size:13px;line-height:1.3;margin:6px 0 8px">${first||'Untitled'}</div>
-        <div class="thumbs"></div>
-        <div style="position:absolute;left:10px;right:10px;bottom:10px;font-size:12px;opacity:.6">Drag ⤵ to calendar</div>
-      `;
+      const lines = Array.isArray(p.thread) && p.thread.length ? p.thread : [(p.title||'').trim()].filter(Boolean);
+const fullHTML = lines.map(l=>`<div>${l.replace(/</g,'&lt;').replace(/>/g,'&gt;')}</div>`).join('');
+tile.innerHTML = `
+  <div class="badge" style="font-size:11px;opacity:.6">Draft</div>
+  <div style="font-size:13px;line-height:1.35;margin:6px 0 8px;white-space:pre-wrap;word-wrap:break-word">${fullHTML || 'Untitled'}</div>
+  <div class="thumbs" style="position:static;display:flex;gap:6px;flex-wrap:wrap"></div>
+  <div style="font-size:12px;opacity:.6">Ready to schedule → drag to a calendar day (later)</div>
+`;
+
 
       // Accept images dropped onto this tile (pairing)
       tile.addEventListener('dragover', e => e.preventDefault());
