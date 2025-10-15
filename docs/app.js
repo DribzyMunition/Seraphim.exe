@@ -317,7 +317,133 @@ main();
     }
   }
 
-  // Initial render
-  renderRail();
-  makeCalendar();
-})();
+--- a/docs/app.js
++++ b/docs/app.js
+@@ -184,6 +189,12 @@
+ (function(){
+   const rail = document.getElementById('text_rail');
+   const calendar = document.getElementById('calendar');
+   if (!rail || !calendar) return;
+ 
++  // Keep an ordering of draft IDs for stable reordering
++  let order = [];
++  function setOrderFromPosts(posts){
++    order = posts.filter(p => normStatus(p.status)==='new').map(p=>p.id);
++  }
++
+   const SLOT_TIMES = ['09:00','11:00','13:00','15:00','17:00','19:00']; // 6/day
+ 
+@@ -198,9 +209,16 @@
+   function normStatus(s){ if(!s) return 'new'; s=s.toLowerCase(); return (s==='draft'||s==='queued')?'new':s; }
+ 
+   let posts = Array.isArray(window.__SERAPHIM_POSTS__) ? window.__SERAPHIM_POSTS__ : [];
++  setOrderFromPosts(posts);
++  // Keep posts fresh if composer adds new ones
++  Object.defineProperty(window, '__SERAPHIM_POSTS__', {
++    set(v){ posts = v; setOrderFromPosts(posts); renderRail(); },
++    get(){ return posts; }
++  });
+ 
+   // Render draft tiles into rail
+-  function renderRail(){
++  function renderRail(){
+     // remove prior rendered tiles (keep composer)
+     [...rail.querySelectorAll('.tile.text')].forEach(n=>n.remove());
+ 
+-    const drafts = posts.filter(p => normStatus(p.status) === 'new');
++    const byId = Object.fromEntries(posts.map(p=>[p.id,p]));
++    const drafts = order.map(id => byId[id]).filter(Boolean);
+     for (const p of drafts){
+       const tile = document.createElement('div');
+       tile.className = 'tile text';
+-      tile.draggable = true;
+-      tile.addEventListener('dragstart', e => setPayload(e, {type:'text', id:p.id}));
++      tile.draggable = true;
++      tile.dataset.id = p.id;
++      tile.addEventListener('dragstart', e => {
++        rail.classList.add('dragging');
++        setPayload(e, {type:'text', id:p.id, origin:'rail'});
++      });
++      tile.addEventListener('dragend', ()=> rail.classList.remove('dragging'));
+ 
+       const first = (p.title || (p.thread?.[0]||'')).slice(0,140);
+       tile.innerHTML = `
+         <div class="badge" style="font-size:11px;opacity:.6">Draft</div>
+         <div style="font-size:13px;line-height:1.3;margin:6px 0 8px">${first||'Untitled'}</div>
+         <div class="thumbs"></div>
+         <div style="position:absolute;left:10px;right:10px;bottom:10px;font-size:12px;opacity:.6">Drag ⤵ to calendar</div>
+       `;
+ 
+       // Accept images dropped onto this tile (pairing)
+       tile.addEventListener('dragover', e => e.preventDefault());
+       tile.addEventListener('drop', e => {
+         e.preventDefault();
+         const pay = getPayload(e);
+         if (!pay) return;
+-        if (pay.type!=='image') return;
+-        const t = tile.querySelector('.thumbs');
+-        const exists = [...t.children].some(img => img.dataset.src === pay.src);
+-        if (!exists){
+-          const img = document.createElement('img');
+-          img.className='thumb';
+-          img.dataset.src = pay.src;
+-          img.src = pay.src;
+-          img.alt = pay.alt||'';
+-          img.style.width='48px';
+-          img.style.height='48px';
+-          t.appendChild(img);
+-        }
++        if (pay.type==='image'){
++          const t = tile.querySelector('.thumbs');
++          const exists = [...t.children].some(img => img.dataset.src === pay.src);
++          if (!exists){
++            const img = document.createElement('img');
++            img.className='thumb';
++            img.dataset.src = pay.src;
++            img.src = pay.src;
++            img.alt = pay.alt||'';
++            img.style.width='48px';
++            img.style.height='48px';
++            t.appendChild(img);
++          }
++        }
+       });
+ 
++      // Drag-over reordering within rail
++      tile.addEventListener('dragover', e => {
++        const payload = getPayload(e);
++        if (!payload || payload.type!=='text' || payload.origin!=='rail') return;
++        e.preventDefault();
++        const draggingId = payload.id;
++        const overId = tile.dataset.id;
++        if (draggingId === overId) return;
++        const from = order.indexOf(draggingId);
++        const to = order.indexOf(overId);
++        if (from>-1 && to>-1){
++          order.splice(from,1);
++          order.splice(to,0,draggingId);
++          renderRail();
++        }
++      });
++
+       rail.appendChild(tile);
+     }
+   }
+@@ -252,7 +280,7 @@
+       cell.addEventListener('drop', e => {
+         e.preventDefault();
+         const pay = getPayload(e);
+-        if (!pay || pay.type!=='text') return;
++        if (!pay || pay.type!=='text') return; // accepts from rail or elsewhere
+         if (slotsEl.children.length>=6) return;
+ 
+         const time = SLOT_TIMES[slotsEl.children.length] || '—';
+@@ -269,6 +297,8 @@
+ 
+   // Initial render
+-  renderRail();
++  window.__renderRailSeraphim = renderRail; // allow composer to trigger rerender
++  renderRail();
+   makeCalendar();
+ })();
+
