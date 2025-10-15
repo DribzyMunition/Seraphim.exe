@@ -22,55 +22,47 @@
         <button id="libraryBtn" type="button">Library</button>
       </div>
 
-      <!-- === TOP: TEXT SECTION (composer at far-left; horizontal rail of text tiles) === -->
+      <!-- TOP: Text section (composer + post tiles rail) -->
       <section class="card">
         <div class="meta">Text section</div>
         <div id="text_rail" class="rail">
-          <!-- Composer tile -->
---- a/docs/index.html
-+++ b/docs/index.html
-@@ -27,12 +27,9 @@
-           <div class="tile composer" aria-label="Writing box">
-             <div class="hint">Writing</div>
--            <textarea id="c_body" class="composer-body" placeholder="Write the post body (one line = one tweet)"></textarea>
-+            <textarea id="c_body" class="composer-body" placeholder="Write your post… (one line = one tweet)"></textarea>
-             <input id="c_images" class="composer-images" placeholder="images (comma-sep, e.g. a.jpg, b.jpg)">
-             <div class="composer-actions">
--              <button id="c_make" type="button">Make JSON</button>
--              <button id="c_copy" type="button">Copy to clipboard</button>
-+              <button id="c_post" type="button">Post</button>
-             </div>
--            <textarea id="c_output" class="composer-output" readonly></textarea>
-           </div>
-           <!-- JS adds draft text tiles here -->
-         </div>
-
-          <!-- JS adds draft text tiles here -->
+          <!-- Composer tile (keeps your current JSON composer working) -->
+          <div class="tile composer" aria-label="Writing box">
+            <div class="hint">Writing</div>
+            <textarea id="c_body" class="composer-body" placeholder="Write the post body (one line = one tweet)"></textarea>
+            <input id="c_images" class="composer-images" placeholder="images (comma-sep, e.g. a.jpg, b.jpg)">
+            <div class="composer-actions">
+              <button id="c_make" type="button">Make JSON</button>
+              <button id="c_copy" type="button">Copy to clipboard</button>
+            </div>
+            <textarea id="c_output" class="composer-output" readonly></textarea>
+          </div>
+          <!-- JS will append draft text tiles here later -->
         </div>
         <div class="tip">Drag images from the library onto a text tile to pair them.</div>
       </section>
 
-      <!-- === MIDDLE: IMAGE LIBRARY (2 rows, horizontal) === -->
+      <!-- MIDDLE: Image Library -->
       <section id="library" class="card" style="display:none">
         <div class="meta">Image Library</div>
         <div style="display:flex;gap:8px;align-items:center;margin-bottom:8px">
           <input id="lib_q" placeholder="filter tags/text…" style="flex:1">
         </div>
         <div id="lib_grid" class="lib-rail" aria-label="image library"></div>
-        <div class="tip">Click an image to add its filename to the composer, or drag it onto a text tile.</div>
+        <div class="tip">Click an image to add its filename to the composer.</div>
       </section>
 
-      <!-- Your existing list of posts (kept) -->
+      <!-- Posts list (kept for your current flow) -->
       <section class="card">
         <div class="meta">Posts</div>
         <div id="list"></div>
       </section>
 
-      <!-- === BOTTOM: 2-WEEK CALENDAR === -->
+      <!-- BOTTOM: Two-week calendar -->
       <section class="card">
         <div class="meta">Two-week calendar</div>
         <div id="calendar" class="cal-grid" aria-label="two week calendar"></div>
-        <div class="tip">Drag a text tile onto a day. Up to 6 posts/day; time shows top-right in white.</div>
+        <div class="tip">Drag a text tile onto a day. Up to 6 posts/day; time shows top-right.</div>
       </section>
     </main>
 
