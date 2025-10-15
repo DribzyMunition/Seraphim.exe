@@ -142,40 +142,72 @@ main();
   q?.addEventListener('input', renderLib);
 })();
 
-// ------------------------------
-// Composer (JSON generator)
-// ------------------------------
-(function(){
-  const bodyEl = document.getElementById('c_body');
-  const makeBtn = document.getElementById('c_make');
-  const copyBtn = document.getElementById('c_copy');
-  const outEl = document.getElementById('c_output');
+--- a/docs/app.js
++++ b/docs/app.js
+@@ -116,33 +116,38 @@
+-// ------------------------------
+-// Composer (JSON generator)
+-// ------------------------------
+-(function(){
+-  const bodyEl = document.getElementById('c_body');
+-  const makeBtn = document.getElementById('c_make');
+-  const copyBtn = document.getElementById('c_copy');
+-  const outEl = document.getElementById('c_output');
+-
+-  if (!bodyEl || !makeBtn || !copyBtn || !outEl) return;
+-
+-  makeBtn.addEventListener('click', () => {
+-    const body = (bodyEl.value || '').trim();
+-    const thread = body.split('\n').map(s=>s.trim()).filter(Boolean);
+-
+-    const today = new Date().toISOString().slice(0,10);
+-    const slug = body.toLowerCase().replace(/[^a-z0-9]+/g,'-').replace(/^-|-$/g,'').slice(0, 24);
+-    const id = `${today}-${slug || 'post'}`;
+-
+-    const imagesField = (document.getElementById('c_images')?.value || '').trim();
+-    const images = imagesField ? imagesField.split(',').map(s=>s.trim()).filter(Boolean).map(name => `./media/${name}`) : [];
+-
+-    const block = { id, status: "new", date_planned: null, tags: [], images, thread };
+-    outEl.value = JSON.stringify(block, null, 2) + ',';
+-  });
+-
+-  copyBtn.addEventListener('click', async () => {
+-    const txt = outEl.value;
+-    if (!txt) return;
+-    try { await navigator.clipboard.writeText(txt); copyBtn.textContent = 'Copied ✓'; }
+-    catch { copyBtn.textContent = 'Copy failed'; }
+-    setTimeout(()=> copyBtn.textContent = 'Copy to clipboard', 1200);
+-  });
+-})();
++// ------------------------------
++// Composer (Post button adds a draft tile to the Text rail)
++// ------------------------------
++(function(){
++  const bodyEl = document.getElementById('c_body');
++  const postBtn = document.getElementById('c_post');
++  if (!bodyEl || !postBtn) return;
++
++  postBtn.addEventListener('click', () => {
++    const body = (bodyEl.value || '').trim();
++    if (!body) return;
++    const thread = body.split('\n').map(s=>s.trim()).filter(Boolean);
++    const today = new Date().toISOString().slice(0,10);
++    const slug = body.toLowerCase().replace(/[^a-z0-9]+/g,'-').replace(/^-|-$/g,'').slice(0,24);
++    const id = `${today}-${slug || ('post-'+Math.random().toString(36).slice(2,7))}`;
++    const imagesField = (document.getElementById('c_images')?.value || '').trim();
++    const images = imagesField ? imagesField.split(',').map(s=>s.trim()).filter(Boolean).map(name => `./media/${name}`) : [];
++
++    // Append to in-memory posts; status=new so it appears in the rail
++    const p = { id, title: thread[0] || 'Untitled', status: 'new', date_planned: null, tags: [], images, thread };
++    window.__SERAPHIM_POSTS__ = Array.isArray(window.__SERAPHIM_POSTS__)? [...window.__SERAPHIM_POSTS__, p] : [p];
++
++    // Clear composer and re-render rail
++    bodyEl.value = '';
++    const imgEl = document.getElementById('c_images'); if (imgEl) imgEl.value = '';
++    if (window.__renderRailSeraphim) window.__renderRailSeraphim();
++  });
++})();
 
-  if (!bodyEl || !makeBtn || !copyBtn || !outEl) return;
-
-  makeBtn.addEventListener('click', () => {
-    const body = (bodyEl.value || '').trim();
-    const thread = body.split('\n').map(s=>s.trim()).filter(Boolean);
-
-    const today = new Date().toISOString().slice(0,10);
-    const slug = body.toLowerCase().replace(/[^a-z0-9]+/g,'-').replace(/^-|-$/g,'').slice(0, 24);
-    const id = `${today}-${slug || 'post'}`;
-
-    const imagesField = (document.getElementById('c_images')?.value || '').trim();
-    const images = imagesField ? imagesField.split(',').map(s=>s.trim()).filter(Boolean).map(name => `./media/${name}`) : [];
-
-    const block = { id, status: "new", date_planned: null, tags: [], images, thread };
-    outEl.value = JSON.stringify(block, null, 2) + ',';
-  });
-
-  copyBtn.addEventListener('click', async () => {
-    const txt = outEl.value;
-    if (!txt) return;
-    try { await navigator.clipboard.writeText(txt); copyBtn.textContent = 'Copied ✓'; }
-    catch { copyBtn.textContent = 'Copy failed'; }
-    setTimeout(()=> copyBtn.textContent = 'Copy to clipboard', 1200);
-  });
-})();
 
 // ------------------------------
 // Scheduler: Text Rail + Calendar
