@@ -26,13 +26,16 @@
       <section class="card">
         <div class="meta">Text section</div>
         <div id="text_rail" class="rail">
-          <!-- Composer tile (keeps your current JSON composer working) -->
--           <div class="composer-actions">
-  <button id="c_post" type="button">Post</button>
+         <!-- Composer tile (simple Post composer) -->
+<div class="tile composer" aria-label="Writing box">
+  <div class="hint">Writing</div>
+  <textarea id="c_body" class="composer-body" placeholder="Write your post… (one line = one tweet)"></textarea>
+  <div class="composer-actions">
+    <button id="c_post" type="button">Post</button>
+  </div>
 </div>
+<!-- JS will append draft text tiles here later -->
 
-
-          <!-- JS will append draft text tiles here later -->
         </div>
         <div class="tip">Drag images from the library onto a text tile to pair them.</div>
       </section>
