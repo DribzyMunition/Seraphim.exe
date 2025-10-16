@@ -302,3 +302,67 @@ function renderCalendar(){
     cal.appendChild(cell);
   }
 }
+/* ===== Text Section V1 (isolated) — makes Post work without touching anything else ===== */
+(function TextSectionV1(){
+  const rail = document.getElementById('text_rail');
+  const composer = rail?.querySelector('.composer');
+  const box = document.getElementById('c_body');
+  const postBtn = document.getElementById('c_post');
+  if (!rail || !composer || !box || !postBtn) return; // quietly bail if markup missing
+
+  // Use existing posts if present; otherwise start empty
+  let posts = Array.isArray(window.__SERAPHIM_POSTS__) ? window.__SERAPHIM_POSTS__ : [];
+  window.__SERAPHIM_POSTS__ = posts; // keep synced for other parts of the page
+
+  function asLines(p){
+    // Full post = thread lines if present; else title
+    const lines = Array.isArray(p.thread) && p.thread.length ? p.thread : [(p.title||'').trim()].filter(Boolean);
+    return lines;
+  }
+
+  function renderRail(){
+    // remove previously rendered text tiles only (leave composer)
+    [...rail.querySelectorAll('.tile.text')].forEach(n=>n.remove());
+
+    // Show newest next to the composer (left). We render in reverse so newest ends up closest.
+    const drafts = posts.filter(p => ((p.status||'new')+'').toLowerCase() === 'new');
+    for (let i = drafts.length - 1; i >= 0; i--){
+      const p = drafts[i];
+      const tile = document.createElement('div');
+      tile.className = 'tile text';
+
+      const html = asLines(p).map(l=>`<div>${l.replace(/</g,'&lt;').replace(/>/g,'&gt;')}</div>`).join('');
+      tile.innerHTML = `
+        <div class="meta" style="margin-bottom:6px;opacity:.65">Draft</div>
+        <div style="font-size:13px;line-height:1.35;white-space:pre-wrap;word-wrap:break-word">${html || 'Untitled'}</div>
+      `;
+
+      // insert immediately to the right of the composer
+      if (composer && composer.nextSibling) rail.insertBefore(tile, composer.nextSibling);
+      else rail.appendChild(tile);
+    }
+  }
+
+  function postNow(){
+    const body = (box.value || '').trim();
+    if (!body) return;
+
+    const thread = body.split('\n').map(s=>s.trim()).filter(Boolean);
+    const today = new Date().toISOString().slice(0,10);
+    const slug = body.toLowerCase().replace(/[^a-z0-9]+/g,'-').replace(/^-|-$/g,'').slice(0,24);
+    const id = `${today}-${slug || ('post-'+Math.random().toString(36).slice(2,7))}`;
+
+    const p = { id, title: thread[0] || 'Untitled', status: 'new', date_planned: null, tags: [], images: [], thread };
+    posts = [p, ...posts];                 // prepend so newest is left
+    window.__SERAPHIM_POSTS__ = posts;     // keep global in sync
+    box.value = '';                        // clear composer
+    renderRail();                          // update tiles
+    box.focus();
+  }
+
+  // Wire once
+  postBtn.addEventListener('click', postNow);
+
+  // Initial draw
+  renderRail();
+})();
