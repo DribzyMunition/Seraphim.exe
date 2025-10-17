@@ -59,10 +59,10 @@ function wireList(posts){
     const want = statusSel.value;
     list.innerHTML = '';
 
-    for(const p of posts){
+    for (const p of posts){
       if (normStatus(p.status) !== want) continue;
       const hay = (p.title+' '+(p.tags||[]).join(' ')+' '+(p.thread||[]).join(' ')).toLowerCase();
-      if(!hay.includes(needle)) continue;
+      if (!hay.includes(needle)) continue;
 
       const card = document.createElement('div');
       card.className = 'card';
@@ -70,36 +70,25 @@ function wireList(posts){
       const tags = (p.tags||[]).map(t=>`${t}`).join(' ');
       const threadHTML = (p.thread||[]).map(t=>`<pre>${t}</pre>`).join('');
 
-      -      // Build gallery if images exist
+      // Build gallery (supports strings or {src,alt} objects)
       let imgs = '';
       if (Array.isArray(p.images)) {
-        imgs = p.images.map(src=>{
-          const alt = p.title || '';
-          return `<img class="thumb" src="${src}" alt="${alt}" onclick="__openLight('${src}','${alt.replace(/\'/g,'&#39;')}')">`;
+        const pics = p.images
+          .map(it => (typeof it === 'string' ? { src: it, alt: p.title || '' } : it))
+          .filter(x => x && x.src);
+        imgs = pics.map(i => {
+          const alt = (i.alt || p.title || '').replace(/'/g,'&#39;');
+          return `<img class="thumb" src="${i.src}" alt="${alt}" onclick="__openLight('${i.src}','${alt}')">`;
         }).join('');
       }
-      // Build gallery (supports strings or {src,alt} objects)
-let imgs = '';
-if (Array.isArray(p.images)) {
-  const pics = p.images
-    .map(it => (typeof it === 'string' ? { src: it, alt: p.title || '' } : it))
-    .filter(x => x && x.src);
-  imgs = pics.map(i => {
-    const alt = (i.alt || p.title || '').replace(/'/g,'&#39;');
-    return `<img class="thumb" src="${i.src}" alt="${alt}" onclick="__openLight('${i.src}','${alt}')">`;
-  }).join('');
-}
-const gallery = imgs ? `<div class="gallery">${imgs}</div>` : '';
+      const gallery = imgs ? `<div class="gallery">${imgs}</div>` : '';
 
-card.innerHTML = `
-  <div class="meta">${p.date_planned||'—'} · <strong>${normStatus(p.status)}</strong> · ${tags}</div>
-  <h3>${p.title||''}</h3>
-  ${gallery}
-  <div class="thread">${threadHTML}</div>
-`;
-
-
-
+      card.innerHTML = `
+        <div class="meta">${p.date_planned||'—'} · <strong>${normStatus(p.status)}</strong> · ${tags}</div>
+        <h3>${p.title||''}</h3>
+        ${gallery}
+        <div class="thread">${threadHTML}</div>
+      `;
       list.appendChild(card);
     }
   }
@@ -108,6 +97,7 @@ card.innerHTML = `
   statusSel.addEventListener('change', render);
   render();
 }
+
 
 // ------------------------------
 // Image Library (toggle + filter + click-to-add filenames)
