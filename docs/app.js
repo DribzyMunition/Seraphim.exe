@@ -70,15 +70,26 @@ function wireList(posts){
       const tags = (p.tags||[]).map(t=>`${t}`).join(' ');
       const threadHTML = (p.thread||[]).map(t=>`<pre>${t}</pre>`).join('');
 
-      // Build gallery if images exist
-      let imgs = '';
-      if (Array.isArray(p.images)) {
-        imgs = p.images.map(src=>{
-          const alt = p.title || '';
-          return `<img class="thumb" src="${src}" alt="${alt}" onclick="__openLight('${src}','${alt.replace(/'/g,'&#39;')}')">`;
-        }).join('');
-      }
-      const gallery = imgs ? `<div class="gallery">${imgs}</div>` : '';
+      -      // Build gallery if images exist
+-      let imgs = '';
+-      if (Array.isArray(p.images)) {
+-        imgs = p.images.map(src=>{
+-          const alt = p.title || '';
+-          return `<img class="thumb" src="${src}" alt="${alt}" onclick="__openLight('${src}','${alt.replace(/\'/g,'&#39;')}')">`;
+-        }).join('');
+-      }
++      // Build gallery (supports strings or {src,alt} objects)
++      let imgs = '';
++      if (Array.isArray(p.images)) {
++        const pics = p.images
++          .map(it => (typeof it === 'string' ? { src: it, alt: p.title || '' } : it))
++          .filter(x => x && x.src);
++        imgs = pics.map(i => {
++          const alt = (i.alt || p.title || '').replace(/'/g,'&#39;');
++          return `<img class="thumb" src="${i.src}" alt="${alt}" onclick="__openLight('${i.src}','${alt}')">`;
++        }).join('');
++      }
+
 
       card.innerHTML = `
         <div class="meta">${p.date_planned||'—'} · <strong>${normStatus(p.status)}</strong> · ${tags}</div>
