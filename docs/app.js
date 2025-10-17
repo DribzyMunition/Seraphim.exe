@@ -92,11 +92,12 @@ function wireList(posts){
 
 
       card.innerHTML = `
-        <div class="meta">${p.date_planned||'—'} · <strong>${normStatus(p.status)}</strong> · ${tags}</div>
-        <h3>${p.title||''}</h3>
-        ${gallery}
-        <div class="thread">${threadHTML}</div>
-      `;
+  <div class="meta">${p.date_planned||'—'} · <strong>${normStatus(p.status)}</strong> · ${tags}</div>
+  <h3>${p.title||''}</h3>
+  ${gallery}
+  <div class="thread">${threadHTML}</div>
+`;
+
 
       list.appendChild(card);
     }
